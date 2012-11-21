@@ -1,9 +1,11 @@
 #include <queue>
 #include <stack>
 #include <vector>
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "huffman_tree.hpp"
 
 using namespace std;
@@ -11,6 +13,29 @@ using namespace std;
 // Performs a DFS on the tree, deleting its nodes.
 huffman_tree::~huffman_tree()
 {
+    stack<huffman_node *> S;
+    S.push(root);
+
+    //DFS loop
+    while (!S.empty())
+    {
+        huffman_node *node = S.top();
+        S.pop();
+
+        if (node->left != NULL && node->right != NULL)
+        {
+            S.push(node->right);
+            S.push(node->left);
+        }
+        else
+        {
+            // For a huffman tree, either both nodes are NULL or both nodes are not
+            // NULL, there can't be one NULL and another not NULL.
+            assert(node->left == NULL && node->right == NULL);
+        }
+
+        delete node;
+    }
 }
 
 // Goes over the file and counts the frequency of each byte.
@@ -107,7 +132,6 @@ string huffman_tree::decode(FILE *fin)
 // Empty ::= (the empty string)
 string huffman_tree::to_string()
 {
-    using namespace std;
     string output = "";
     stack<huffman_node *> S;
 
