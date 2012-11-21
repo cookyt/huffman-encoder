@@ -11,6 +11,8 @@ int main(int argc, char **argv)
     }
     FILE *fin = fopen(argv[1], "r");
 
+    huffman_tree tree = huffman_tree::from_string("");
+
     fclose(fin);
     return 0;
 }
