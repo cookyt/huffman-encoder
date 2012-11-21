@@ -1,9 +1,7 @@
 #ifndef HUFFMAN_NODE_HPP
 #define HUFFMAN_NODE_HPP
 
-#ifndef NULL
-# define NULL 0
-#endif
+#include <string>
 
 class huffman_node
 {
@@ -11,15 +9,13 @@ class huffman_node
     huffman_node *left;
     huffman_node *right;
 
-    char chr;
+    char ch;
     int freq;
 
-    huffman_node(char ch='\0');
-
-    bool operator <(huffman_node& other)
-    {
-        return (this->freq < other.freq);
-    }
+    huffman_node(int frequency=0, char chr='\0');
+    std::string to_string();
 };
+
+bool operator<(const huffman_node& lhs, const huffman_node& rhs);
 
 #endif
