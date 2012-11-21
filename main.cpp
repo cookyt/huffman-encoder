@@ -1,15 +1,17 @@
-#include <set>
-#include <iostream>
-#include "huffman_node.hpp"
+#include <stdio.h>
+#include <string.h>
+#include "huffman_tree.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
-    huffman_node one;
-    one.freq = 10;
+    if (argc != 2)
+    {
+        printf("Usage: %s input-file\n", argv[0]);
+        return 1;
+    }
+    FILE *fin = fopen(argv[1], "r");
 
-    huffman_node two;
-    two.freq = 0;
-    
-    std::cout << (one < two) << std::endl;
+    fclose(fin);
     return 0;
 }
+

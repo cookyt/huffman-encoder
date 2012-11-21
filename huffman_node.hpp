@@ -14,13 +14,7 @@ class huffman_node
     char chr;
     int freq;
 
-    huffman_node(char ch='\0')
-    {
-        left = NULL;
-        right = NULL;
-        freq = 0;
-        chr = ch;
-    }
+    huffman_node(char ch='\0');
 
     bool operator <(huffman_node& other)
     {
