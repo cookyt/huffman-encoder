@@ -20,6 +20,7 @@ class huffman_tree
     static huffman_tree from_string(std::string sin);
 
     std::string encode(FILE *fin);
+    std::string decode(FILE *fin);
     std::string to_string();
 };
 
