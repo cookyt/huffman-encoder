@@ -9,9 +9,11 @@ class huffman_tree
   private:
     huffman_tree() {}
     static void freq_list(FILE *fin, int *out);
+    void build_index();
 
   public:
     huffman_node *root;
+    std::string *index[256];
 
     ~huffman_tree();
 

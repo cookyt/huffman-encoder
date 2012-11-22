@@ -13,10 +13,9 @@ using namespace std;
 // Performs a DFS on the tree, deleting its nodes.
 huffman_tree::~huffman_tree()
 {
+    // delete tree
     stack<huffman_node *> S;
     S.push(root);
-
-    //DFS loop
     while (!S.empty())
     {
         huffman_node *node = S.top();
@@ -53,6 +52,36 @@ void huffman_tree::freq_list(FILE *fin, int *out)
     }
 }
 
+void huffman_tree::build_index()
+{
+    bzero(index, 256*sizeof(*index));
+
+    stack<huffman_node *> S;
+    S.push(root);
+    while (!S.empty())
+    {
+        huffman_node *node = S.top();
+        S.pop();
+
+        if (node->left != NULL && node->right != NULL)
+        {
+            node->right->bits += node->bits;
+            node->left->bits += node->bits;
+
+            node->right->bits += '1';
+            node->left->bits += '0';
+
+            S.push(node->right);
+            S.push(node->left);
+        }
+        else
+        {
+            assert(node->left == NULL && node->right == NULL);
+            index[node->ch] = &(node->bits);
+        }
+    }
+}
+
 // Comparator for two 
 struct HuffLess
 {
@@ -82,10 +111,8 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
 
     while (Q.size() > 1)
     {
-        huffman_node *lnode = Q.top();
-        Q.pop();
-        huffman_node *rnode = Q.top();
-        Q.pop();
+        huffman_node *lnode = Q.top(); Q.pop();
+        huffman_node *rnode = Q.top(); Q.pop();
         huffman_node *node = new huffman_node(lnode->freq + rnode->freq);
         node->left = lnode;
         node->right = rnode;
@@ -94,6 +121,7 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
 
     huffman_node *node = Q.top();
     tree.root = node;
+    tree.build_index();
 
     return tree;
 }
@@ -112,6 +140,16 @@ huffman_tree huffman_tree::from_tree_file(FILE *fin)
 // fin - the file to read from
 string huffman_tree::encode(FILE *fin)
 {
+    string output = "";
+    for (;;)
+    {
+        unsigned char c = fgetc(fin);
+        if (feof(fin))
+            break;
+        assert(index[c] != NULL);
+        output += *(index[c]);
+    }
+    return output;
 }
 
 // Decodes a file using this huffman tree. Quits if an impossible bit string is
@@ -119,6 +157,35 @@ string huffman_tree::encode(FILE *fin)
 // fin - the file to read from
 string huffman_tree::decode(FILE *fin)
 {
+    string output = "";
+    huffman_node *cur = root;
+    for (;;)
+    {
+        char c = fgetc(fin);
+        if (feof(fin))
+            break;
+        switch (c)
+        {
+            case '0':
+                cur = cur->left;
+                break;
+            case '1':
+                cur = cur->right;
+                break;
+            default:
+                assert(false);
+        }
+        if (cur->left == NULL && cur->right == NULL)
+        {
+            output += cur->ch;
+            cur = root;
+        }
+        else
+        {
+            assert(cur->left != NULL && cur->right != NULL);
+        }
+    }
+    return output;
 }
 
 // Returns a string representation of this huffman tree. This string can be fed
@@ -138,7 +205,7 @@ string huffman_tree::to_string()
     S.push(root);
 
     // Used to mark when to print a closing bracket in the DFS stack.
-    huffman_node sentinal(-1, 0);
+    huffman_node sentinal(-1);
 
     //DFS loop
     while (!S.empty())
