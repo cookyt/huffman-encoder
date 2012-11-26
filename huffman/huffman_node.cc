@@ -12,9 +12,3 @@ huffman_node::huffman_node(int frequency, char chr)
     ch = chr;
     bits = "";
 }
-
-
-bool operator<(const huffman_node& lhs, const huffman_node& rhs)
-{
-    return (lhs.freq > rhs.freq);
-}

@@ -15,6 +15,4 @@ class huffman_node
     huffman_node(int frequency=0, char chr='\0');
 };
 
-bool operator<(const huffman_node& lhs, const huffman_node& rhs);
-
 #endif

@@ -57,6 +57,9 @@ void huffman_tree::build_index()
 {
     bzero(index, 256*sizeof(*index));
 
+    if (root == NULL)
+        return;
+
     // DFS on the tree, and build an array index mapping chars to bit
     // strings
     stack<huffman_node *> S;
@@ -85,12 +88,13 @@ void huffman_tree::build_index()
     }
 }
 
-// Comparator for two 
+// Comparator used in the priority queue implementation of
+// huffman_tree::from_input_file
 struct HuffLess
 {
     bool operator()(huffman_node *p1, huffman_node *p2) const 
     {
-        return (*p1 < *p2);
+        return (p1->freq > p2->freq);
     }
 };
 
@@ -138,7 +142,6 @@ void readNode(huffman_node * &node, FILE *fin)
     assert (c != EOF);
     node = new huffman_node(0, c);
 
-
     c = fgetc(fin);
     assert(c == '[');
 
@@ -172,6 +175,7 @@ huffman_tree huffman_tree::from_tree_file(FILE *fin)
         readNode(tree.root, fin);
     }
 
+    tree.build_index();
     return tree;
 }
 
@@ -197,6 +201,7 @@ string huffman_tree::encode(FILE *fin)
 // fin - the file to read from
 string huffman_tree::decode(FILE *fin)
 {
+
     string output = "";
     huffman_node *cur = root;
     for (;;)
@@ -204,6 +209,7 @@ string huffman_tree::decode(FILE *fin)
         char c = fgetc(fin);
         if (feof(fin))
             break;
+        assert(cur != NULL);
         switch (c)
         {
             case '0':
@@ -215,6 +221,7 @@ string huffman_tree::decode(FILE *fin)
             default:
                 assert(false);
         }
+        assert(cur != NULL);
         if (cur->left == NULL && cur->right == NULL)
         {
             output += cur->ch;
