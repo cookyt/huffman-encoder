@@ -1,10 +1,5 @@
-#include <queue>
-#include <iostream>
 #include <string>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
 
 #include "huffman/huffman_tree.h"
 #include "util.h"
@@ -13,14 +8,20 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    if (argc != 4)
+    if (argc != 3)
     {
-        printf("Usage: %s input-file output-file tree-file\n", argv[0]);
+        printf(
+            "Huffman Encoder:\n"
+            "Encodes the given file. Tree representation is written\n"
+            "to tree-file, encoded file is written to standard\n"
+            "output.\n\n"
+            "Usage: %s input-file tree-file\n",
+            argv[0]);
         return 1;
     }
     FILE *fin = sfopen(argv[1], "r");
-    FILE *fout = sfopen(argv[2], "w");
-    FILE *ftree = sfopen(argv[3], "w");
+    FILE *fout = stdout;
+    FILE *ftree = sfopen(argv[2], "w");
 
     huffman_tree tree = huffman_tree::from_input_file(fin);
     rewind(fin);

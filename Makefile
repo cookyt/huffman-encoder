@@ -1,11 +1,15 @@
-src = 	huffman/huffman_tree.cc \
-		huffman/huffman_node.cc \
-		util.cc \
-		main.cc \
+obj = 	huffman/huffman_tree.o \
+		huffman/huffman_node.o \
+		util.o \
 
 CC = g++ -g
 
-test: $(src:.cc=.o)
+all: encode decode
+
+encode: $(obj) encode.cc
+	$(CC) $^ -o $@
+
+decode: $(obj) decode.cc
 	$(CC) $^ -o $@
 
 %.o: %.cc %.h
