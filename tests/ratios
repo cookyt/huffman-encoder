@@ -1,0 +1,19 @@
+#!/bin/sh
+cd input
+
+for fil in `ls` ; do
+    enc=../tests/$fil.enc
+    dec=../tests/$fil.dec
+
+    echo -n $fil": "
+    if diff $fil $dec ; then
+        echo "good"
+    else
+        echo "bad"
+    fi
+
+    echo -n "ratio: "
+    size=`wc -c < $enc`
+    size=`echo "print ($size+7)/8" | python`
+    echo "$size/`wc -c < $fil`" | bc -l
+done
