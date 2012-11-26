@@ -2,7 +2,8 @@
 #define HUFFMAN_TREE_HPP
 
 #include <string>
-#include "huffman_node.hpp"
+
+class huffman_node;
 
 class huffman_tree
 {

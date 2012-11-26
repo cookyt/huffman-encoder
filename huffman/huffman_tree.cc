@@ -6,7 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "huffman_tree.hpp"
+#include "huffman_tree.h"
+#include "huffman_node.h"
 
 using namespace std;
 

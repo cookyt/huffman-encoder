@@ -1,4 +1,4 @@
-#include "huffman_node.hpp"
+#include "huffman_node.h"
 
 #ifndef NULL
 # define NULL 0

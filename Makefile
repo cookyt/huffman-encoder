@@ -1,13 +1,19 @@
+src = 	huffman/huffman_tree.cc \
+		huffman/huffman_node.cc \
+		util.cc \
+		main.cc \
+
 CC = g++ -g
 
-test: main.cpp huffman_node.o huffman_tree.o
-	$(CC) huffman_node.o huffman_tree.o main.cpp -o test
+test: $(src:.cc=.o)
+	$(CC) $^ -o $@
 
-huffman_node.o: huffman_node.cpp huffman_node.hpp
-	$(CC) -c huffman_node.cpp
+%.o: %.cc %.h
+	$(CC) -c $< -o $@
 
-huffman_tree.o: huffman_tree.cpp huffman_tree.hpp
-	$(CC) -c huffman_tree.cpp
+%.o: %.cc
+	$(CC) -c $< -o $@
 
 clean:
 	-$(RM) *.o
+	-$(RM) huffman/*.o
