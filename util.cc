@@ -1,4 +1,4 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include "util.h"
 
 FILE *sfopen(const char *path, const char *mode)
