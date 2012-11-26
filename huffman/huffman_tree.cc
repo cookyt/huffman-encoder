@@ -1,10 +1,9 @@
 #include <queue>
 #include <stack>
 #include <vector>
-
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
+#include <cassert>
+#include <cstdio>
+#include <cstring>
 
 #include "huffman_tree.h"
 #include "huffman_node.h"
@@ -29,8 +28,9 @@ huffman_tree::~huffman_tree()
         }
         else
         {
-            // For a huffman tree, either both nodes are NULL or both nodes are not
-            // NULL, there can't be one NULL and another not NULL.
+            // For a huffman tree, either both nodes are NULL or both
+            // nodes are not NULL, there can't be one NULL and another not
+            // NULL.
             assert(node->left == NULL && node->right == NULL);
         }
 
@@ -57,6 +57,8 @@ void huffman_tree::build_index()
 {
     bzero(index, 256*sizeof(*index));
 
+    // DFS on the tree, and build an array index mapping chars to bit
+    // strings
     stack<huffman_node *> S;
     S.push(root);
     while (!S.empty())
@@ -127,17 +129,53 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
     return tree;
 }
 
+void readNode(huffman_node * &node, FILE *fin)
+{
+    int c = fgetc(fin);
+    assert (c == 'b');
+
+    c = fgetc(fin);
+    assert (c != EOF);
+    node = new huffman_node(0, c);
+
+    c = fgetc(fin);
+    assert(c == '[');
+
+    c = fgetc(fin);
+    if (c == 'b')
+    {
+        ungetc(c, fin);
+        readNode(node->left, fin);
+        readNode(node->right, fin);
+        c = fgetc(fin);
+        assert(c == ']');
+    }
+    else
+    {
+        assert(c == ']');
+    }
+}
+
 // Constructs a huffman tree from a file containing the contents of
 // huffman_tree::to_string.
 // fin - the file to read from
 huffman_tree huffman_tree::from_tree_file(FILE *fin)
 {
     huffman_tree tree;
+
+    int c = fgetc(fin);
+    if (c != EOF)
+    {
+        assert (c == 'b');
+        ungetc(c, fin);
+        readNode(tree.root, fin);
+    }
+
     return tree;
 }
 
-// Encodes a file with this huffman tree. Returns a string of ASCII 1's and 0's
-// representing the encoded file. The method reads until EOF.
+// Encodes a file with this huffman tree. Returns a string of ASCII 1's
+// and 0's representing the encoded file. The method reads until EOF.
 // fin - the file to read from
 string huffman_tree::encode(FILE *fin)
 {
@@ -153,8 +191,8 @@ string huffman_tree::encode(FILE *fin)
     return output;
 }
 
-// Decodes a file using this huffman tree. Quits if an impossible bit string is
-// found.
+// Decodes a file using this huffman tree. Quits if an impossible bit
+// string is found.
 // fin - the file to read from
 string huffman_tree::decode(FILE *fin)
 {
@@ -189,14 +227,15 @@ string huffman_tree::decode(FILE *fin)
     return output;
 }
 
-// Returns a string representation of this huffman tree. This string can be fed
-// into huffman_tree::from_string to construct a new tree.
+// Returns a string representation of this huffman tree. This string can
+// be saved and fed into huffman_tree::from_tree_file to construct a new
+// tree.
 // The EBNF of this string is
 // ==========================
 // Tree ::= N | E
 // Node ::= B[C]
 // Children ::= NN | E
-// Byte ::= (a single byte)
+// Byte ::= b(a single byte)
 // Empty ::= (the empty string)
 string huffman_tree::to_string()
 {
@@ -220,6 +259,7 @@ string huffman_tree::to_string()
             continue;
         }
 
+        output += 'b';
         output += node->ch;
         output += '[';
 
@@ -231,8 +271,9 @@ string huffman_tree::to_string()
         }
         else
         {
-            // For a huffman tree, either both nodes are NULL or both nodes are not
-            // NULL, there can't be one NULL and another not NULL.
+            // For a huffman tree, either both nodes are NULL or both
+            // nodes are not NULL, there can't be one NULL and another not
+            // NULL.
             assert(node->left == NULL && node->right == NULL);
         }
     }

@@ -1,5 +1,5 @@
-#ifndef HUFFMAN_NODE_HPP
-#define HUFFMAN_NODE_HPP
+#ifndef HUFFMAN_NODE_H
+#define HUFFMAN_NODE_H
 #include <string>
 
 class huffman_node
