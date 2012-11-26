@@ -138,6 +138,7 @@ void readNode(huffman_node * &node, FILE *fin)
     assert (c != EOF);
     node = new huffman_node(0, c);
 
+
     c = fgetc(fin);
     assert(c == '[');
 
@@ -253,6 +254,9 @@ string huffman_tree::to_string()
         huffman_node *node = S.top();
         S.pop();
 
+        if (node == NULL)
+            continue;
+
         if (node == &sentinal)
         {
             output += ']';
@@ -263,19 +267,9 @@ string huffman_tree::to_string()
         output += node->ch;
         output += '[';
 
-        if (node->left != NULL && node->right != NULL)
-        {
-            S.push(&sentinal);
-            S.push(node->right);
-            S.push(node->left);
-        }
-        else
-        {
-            // For a huffman tree, either both nodes are NULL or both
-            // nodes are not NULL, there can't be one NULL and another not
-            // NULL.
-            assert(node->left == NULL && node->right == NULL);
-        }
+        S.push(&sentinal);
+        S.push(node->right);
+        S.push(node->left);
     }
 
     return output;

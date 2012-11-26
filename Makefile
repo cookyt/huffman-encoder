@@ -19,5 +19,8 @@ decode: $(obj) decode.cc
 	$(CC) -c $< -o $@
 
 clean:
-	-$(RM) *.o
-	-$(RM) huffman/*.o
+	-$(RM) *.o huffman/*.o
+
+clean-all: clean
+	-$(RM) decode encode
+	-$(RM) tags types_c.taghl
