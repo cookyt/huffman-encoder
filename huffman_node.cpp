@@ -10,6 +10,7 @@ huffman_node::huffman_node(int frequency, char chr)
     right = NULL;
     freq = frequency;
     ch = chr;
+    bits = "";
 }
 
 

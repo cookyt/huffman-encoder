@@ -1,6 +1,5 @@
 #ifndef HUFFMAN_NODE_HPP
 #define HUFFMAN_NODE_HPP
-
 #include <string>
 
 class huffman_node
@@ -11,6 +10,7 @@ class huffman_node
 
     char ch;
     int freq;
+    std::string bits;
 
     huffman_node(int frequency=0, char chr='\0');
 };
