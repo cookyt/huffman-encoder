@@ -14,6 +14,6 @@ for fil in `ls` ; do
 
     echo -n "ratio: "
     size=`wc -c < $enc`
-    size=`echo "print ($size+7)/8" | python`
+    # size=`echo "print ($size+7)/8" | python`
     echo "$size/`wc -c < $fil`" | bc -l
 done

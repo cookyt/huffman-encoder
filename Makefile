@@ -24,12 +24,12 @@ tests/%.enc tests/%.tree: encode input/%
 	./decode $*.enc $*.tree > $@
 
 encode: $(obj) encode.cc
-	$(CC) $^ -o $@
+	$(CC) $^ -I. -o $@
 decode: $(obj) decode.cc
-	$(CC) $^ -o $@
+	$(CC) $^ -I. -o $@
 
 %.o: %.cc %.h
-	$(CC) -c $< -o $@
+	$(CC) -c $< -I. -o $@
 %.o: %.cc
 	$(CC) -c $< -o $@
 

@@ -1,6 +1,7 @@
 #ifndef HUFFMAN_NODE_H
 #define HUFFMAN_NODE_H
 #include <string>
+#include "util/bitvector.h"
 
 class huffman_node
 {
@@ -10,7 +11,7 @@ class huffman_node
 
     char ch;
     int freq;
-    std::string bits;
+    bitvector bits;
 
     huffman_node(int frequency=0, char chr='\0');
 };

@@ -7,8 +7,15 @@
 
 #include "huffman_tree.h"
 #include "huffman_node.h"
+#include "util/bitvector.h"
 
 using namespace std;
+
+huffman_tree::huffman_tree()
+{
+    bzero(index, 256*sizeof(*index));
+    root = NULL;
+}
 
 // Performs a DFS on the tree, deleting its nodes.
 huffman_tree::~huffman_tree()
@@ -74,8 +81,8 @@ void huffman_tree::build_index()
             node->right->bits += node->bits;
             node->left->bits += node->bits;
 
-            node->right->bits += '1';
-            node->left->bits += '0';
+            node->right->bits += true;
+            node->left->bits += false;
 
             S.push(node->right);
             S.push(node->left);
@@ -182,9 +189,9 @@ huffman_tree huffman_tree::from_tree_file(FILE *fin)
 // Encodes a file with this huffman tree. Returns a string of ASCII 1's
 // and 0's representing the encoded file. The method reads until EOF.
 // fin - the file to read from
-string huffman_tree::encode(FILE *fin)
+bitvector huffman_tree::encode(FILE *fin)
 {
-    string output = "";
+    bitvector output;
     for (;;)
     {
         unsigned char c = fgetc(fin);
@@ -203,19 +210,17 @@ string huffman_tree::decode(FILE *fin)
 {
 
     string output = "";
+    bitvector input(fin);
     huffman_node *cur = root;
-    for (;;)
+    for (int i=0; i<input.size(); i++)
     {
-        char c = fgetc(fin);
-        if (feof(fin))
-            break;
         assert(cur != NULL);
-        switch (c)
+        switch (input[i])
         {
-            case '0':
+            case false:
                 cur = cur->left;
                 break;
-            case '1':
+            case true:
                 cur = cur->right;
                 break;
             default:

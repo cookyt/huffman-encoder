@@ -3,6 +3,7 @@
 
 #include "huffman/huffman_tree.h"
 #include "util/util.h"
+#include "util/bitvector.h"
 
 using namespace std;
 
@@ -26,9 +27,9 @@ int main(int argc, char **argv)
     huffman_tree tree = huffman_tree::from_input_file(fin);
     rewind(fin);
 
-    string encoded = tree.encode(fin);
+    bitvector encoded = tree.encode(fin);
     string tree_str = tree.to_string();
-    fwrite(encoded.data(), sizeof(char), encoded.size(), fout);
+    encoded.to_file(fout);
     fwrite(tree_str.data(), sizeof(char), tree_str.size(), ftree);
 
     fclose(fin);
