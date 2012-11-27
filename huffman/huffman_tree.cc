@@ -132,78 +132,25 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
     return tree;
 }
 
-void huffman_tree::readNode(huffman_node * &node, FILE *fin)
-{
-    int c = fgetc(fin);
-    assert (c == 'b');
-
-    c = fgetc(fin);
-    assert (c != EOF);
-    node = new huffman_node(0, c);
-
-    c = fgetc(fin);
-    assert(c == '[');
-
-    c = fgetc(fin);
-    if (c == 'b')
-    {
-        ungetc(c, fin);
-        readNode(node->left, fin);
-        readNode(node->right, fin);
-        c = fgetc(fin);
-        assert(c == ']');
-    }
-    else
-    {
-        assert(c == ']');
-    }
-}
-
-
-huffman_tree huffman_tree::from_tree_file(FILE *fin)
-{
-    huffman_tree tree;
-
-    int c = fgetc(fin);
-    if (c != EOF)
-    {
-        assert (c == 'b');
-        ungetc(c, fin);
-        readNode(tree.root, fin);
-    }
-
-    tree.build_index();
-    return tree;
-}
-
 void huffman_tree::readNode(huffman_node * &node, const char *data, int &pos,
                             int str_len)
 {
     assert (pos < str_len);
     char c = data[pos++];
-    assert (c == 'b');
 
-    assert (pos < str_len);
-    c = data[pos++];
     node = new huffman_node(0, c);
-
-    assert (pos < str_len);
-    c = data[pos++];
-    assert(c == '[');
-
-    c = data[pos++];
-    if (c == 'b')
+    switch (c)
     {
-        pos--;
-        readNode(node->left, data, pos, str_len);
-        readNode(node->right, data, pos, str_len);
-        assert (pos < str_len);
-        c = data[pos++];
-        assert(c == ']');
-    }
-    else
-    {
-        assert(c == ']');
+        case '0':
+            readNode(node->left, data, pos, str_len);
+            readNode(node->right, data, pos, str_len);
+            break;
+        case '1':
+            assert (pos < str_len);
+            node->ch = data[pos++];
+            break;
+        default:
+            assert(false);
     }
 }
 
@@ -213,10 +160,9 @@ huffman_tree huffman_tree::from_tree_string(string tree_str)
 
     if (tree_str.size() > 0)
     {
-        const char *data = tree_str.data();
-        assert (data[0] == 'b');
+        // assert (data[0] == 'b');
         int pos=0;
-        readNode(tree.root, data, pos, tree_str.size());
+        readNode(tree.root, tree_str.data(), pos, tree_str.size());
     }
 
     tree.build_index();
@@ -277,10 +223,6 @@ string huffman_tree::to_string()
 
     S.push(root);
 
-    // Used to mark when to print a closing
-    // bracket in the DFS stack.
-    huffman_node sentinal(-1);
-
     //DFS loop
     while (!S.empty())
     {
@@ -289,18 +231,17 @@ string huffman_tree::to_string()
 
         if (node == NULL)
             continue;
-
-        if (node == &sentinal)
+        
+        if (node->left != NULL && node->right != NULL)
         {
-            output += ']';
-            continue;
+            output += '0';
+        }
+        else
+        {
+            output += '1';
+            output += node->ch;
         }
 
-        output += 'b';
-        output += node->ch;
-        output += '[';
-
-        S.push(&sentinal);
         S.push(node->right);
         S.push(node->left);
     }

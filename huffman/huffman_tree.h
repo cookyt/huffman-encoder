@@ -20,12 +20,8 @@ class huffman_tree
     // fin - the file to read from.
     static huffman_tree from_input_file(FILE *fin);
 
-    // Constructs a huffman tree from a file containing the contents of
+    // Constructs a huffman tree from a string containing the contents of
     // huffman_tree::to_string.
-    //
-    // fin - the file to read from
-    static huffman_tree from_tree_file(FILE *fin);
-
     static huffman_tree from_tree_string(std::string tree_str);
 
     // Encodes a file with this huffman tree.  Returns a bitvector representing
@@ -41,15 +37,8 @@ class huffman_tree
     std::string decode(FILE *fin);
 
     // Returns a string representation of this huffman tree. This string can be
-    // saved and fed into huffman_tree::from_tree_file to construct a new tree.
-    //
-    // The EBNF of this string is
-    // ==========================
-    // Tree ::= N | E
-    // Node ::= B[C]
-    // Children ::= NN | E
-    // Byte ::= (character 'b' followed by a single byte)
-    // Empty ::= (the empty string)
+    // saved and fed into huffman_tree::from_tree_string  to construct a new
+    // tree.
     std::string to_string();
 
   private:
@@ -71,12 +60,6 @@ class huffman_tree
     // Recursive parsing helper method. Reads a single node into the tree, and
     // recursively adds its children too. It can be thought of the helper
     // method to a DFS.
-    //
-    // node - pointer to where this node will be referenced in the tree.
-    // fin - file from which the tree is read.
-    static void readNode(huffman_node * &node, FILE *fin);
-
-    // Variant of readNode used for from_tree_string
     //
     // node - pointer to where this node will be referenced in the tree.
     // data - character buffer containing the huffman tree
