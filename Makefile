@@ -1,6 +1,7 @@
 obj = 	huffman/huffman_tree.o \
 		huffman/huffman_node.o \
-		util.o
+		util/util.o \
+		util/bitvector.o
 
 test =	hamlet.orig \
 		juliuscaesar.orig \
@@ -9,12 +10,12 @@ test =	hamlet.orig \
 
 CC = g++ -g
 
+all: encode decode
+
 test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec)) ratios
 
 ratios:
 	@tests/ratios
-
-all: encode decode
 
 .SUFFIXES: .enc .dec .tree
 tests/%.enc tests/%.tree: encode input/%
@@ -33,7 +34,7 @@ decode: $(obj) decode.cc
 	$(CC) -c $< -o $@
 
 clean:
-	-$(RM) *.o huffman/*.o
+	-$(RM) *.o huffman/*.o util/*.o
 clean-tst:
 	-$(RM) tests/*.dec tests/*.enc tests/*.tree
 clean-bin:

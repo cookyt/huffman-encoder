@@ -2,7 +2,7 @@
 #include <cstdio>
 
 #include "huffman/huffman_tree.h"
-#include "util.h"
+#include "util/util.h"
 
 using namespace std;
 
