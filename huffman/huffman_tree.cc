@@ -62,8 +62,7 @@ void huffman_tree::build_index()
     if (root == NULL)
         return;
 
-    // DFS on the tree, and build an array
-    // index mapping chars to bit strings
+    // DFS on the tree, and build an array index mapping chars to bit strings
     stack<huffman_node *> S;
     S.push(root);
     while (!S.empty())
@@ -85,7 +84,7 @@ void huffman_tree::build_index()
         else
         {
             assert(node->left == NULL && node->right == NULL);
-            index[node->ch] = &(node->bits);
+            index[(unsigned char)node->ch] = &(node->bits);
         }
     }
 }
@@ -133,9 +132,7 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
     return tree;
 }
 
-void huffman_tree::readNode(
-    huffman_node * &node,
-    FILE *fin)
+void huffman_tree::readNode(huffman_node * &node, FILE *fin)
 {
     int c = fgetc(fin);
     assert (c == 'b');
@@ -162,6 +159,7 @@ void huffman_tree::readNode(
     }
 }
 
+
 huffman_tree huffman_tree::from_tree_file(FILE *fin)
 {
     huffman_tree tree;
@@ -172,6 +170,53 @@ huffman_tree huffman_tree::from_tree_file(FILE *fin)
         assert (c == 'b');
         ungetc(c, fin);
         readNode(tree.root, fin);
+    }
+
+    tree.build_index();
+    return tree;
+}
+
+void huffman_tree::readNode(huffman_node * &node, const char *data, int &pos,
+                            int str_len)
+{
+    assert (pos < str_len);
+    char c = data[pos++];
+    assert (c == 'b');
+
+    assert (pos < str_len);
+    c = data[pos++];
+    node = new huffman_node(0, c);
+
+    assert (pos < str_len);
+    c = data[pos++];
+    assert(c == '[');
+
+    c = data[pos++];
+    if (c == 'b')
+    {
+        pos--;
+        readNode(node->left, data, pos, str_len);
+        readNode(node->right, data, pos, str_len);
+        assert (pos < str_len);
+        c = data[pos++];
+        assert(c == ']');
+    }
+    else
+    {
+        assert(c == ']');
+    }
+}
+
+huffman_tree huffman_tree::from_tree_string(string tree_str)
+{
+    huffman_tree tree;
+
+    if (tree_str.size() > 0)
+    {
+        const char *data = tree_str.data();
+        assert (data[0] == 'b');
+        int pos=0;
+        readNode(tree.root, data, pos, tree_str.size());
     }
 
     tree.build_index();

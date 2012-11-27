@@ -18,15 +18,15 @@ class huffman_tree
     // Constructs a huffman tree from any given input file.
     //
     // fin - the file to read from.
-    static huffman_tree from_input_file(
-        FILE *fin);
+    static huffman_tree from_input_file(FILE *fin);
 
     // Constructs a huffman tree from a file containing the contents of
     // huffman_tree::to_string.
     //
     // fin - the file to read from
-    static huffman_tree from_tree_file(
-        FILE *fin);
+    static huffman_tree from_tree_file(FILE *fin);
+
+    static huffman_tree from_tree_string(std::string tree_str);
 
     // Encodes a file with this huffman tree.  Returns a bitvector representing
     // the encoded data. The method reads until EOF.
@@ -75,6 +75,15 @@ class huffman_tree
     // node - pointer to where this node will be referenced in the tree.
     // fin - file from which the tree is read.
     static void readNode(huffman_node * &node, FILE *fin);
+
+    // Variant of readNode used for from_tree_string
+    //
+    // node - pointer to where this node will be referenced in the tree.
+    // data - character buffer containing the huffman tree
+    // pos - the position of the next character in the buffer (initially 0)
+    // str_len - the number of characters in the buffer
+    static void readNode(huffman_node * &node, const char *data, int &pos,
+                         int str_len);
 };
 
 #endif

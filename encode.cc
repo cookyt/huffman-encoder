@@ -7,34 +7,39 @@
 
 using namespace std;
 
+// Prepends the huffman tree and its length to the output file
+void write_header(FILE *fout, huffman_tree& tree)
+{
+    string tree_str = tree.to_string();
+    unsigned short tree_len = tree_str.size();
+    fwrite(&tree_len, sizeof(tree_len), 1, fout);
+    fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);
+}
+
 int main(int argc, char **argv)
 {
-    if (argc != 3)
+    if (argc != 2)
     {
         printf(
             "Huffman Encoder:\n"
-            "Encodes the given file. Tree representation is written\n"
-            "to tree-file, encoded file is written to standard\n"
+            "Encodes the given file. Encoded file is written to standard\n"
             "output.\n\n"
-            "Usage: %s input-file tree-file\n",
+            "Usage: %s input-file\n",
             argv[0]);
         return 1;
     }
     FILE *fin = sfopen(argv[1], "r");
     FILE *fout = stdout;
-    FILE *ftree = sfopen(argv[2], "w");
 
     huffman_tree tree = huffman_tree::from_input_file(fin);
     rewind(fin);
 
-    bitvector encoded = tree.encode(fin);
-    string tree_str = tree.to_string();
-    encoded.to_file(fout);
-    fwrite(tree_str.data(), sizeof(char), tree_str.size(), ftree);
+    // write the encoded data out
+    write_header(fout, tree);
+    tree.encode(fin).to_file(fout);
 
     fclose(fin);
     fclose(fout);
-    fclose(ftree);
 
     return 0;
 }
