@@ -16,11 +16,11 @@ test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.
 	@tests/ratios
 
 
-.SUFFIXES: .enc .dec .tree
-tests/%.enc tests/%.tree: encode input/%
-	./encode input/$(notdir $*) tests/$*.tree > $@
-%.dec: decode %.enc %.tree
-	./decode $*.enc $*.tree > $@
+.SUFFIXES: .enc .dec
+tests/%.enc: encode input/%
+	./encode input/$(notdir $*) > $@
+%.dec: decode %.enc
+	./decode $*.enc > $@
 
 encode: $(obj) encode.cc
 	$(CC) $^ -I. -o $@
