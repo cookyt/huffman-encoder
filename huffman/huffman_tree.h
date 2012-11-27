@@ -9,22 +9,72 @@ class huffman_node;
 class huffman_tree
 {
   public:
+    // The root of this tree
     huffman_node *root;
-    bitvector *index[256];
 
+    // Performs a DFS on the tree, deleting its nodes.
     ~huffman_tree();
 
-    static huffman_tree from_input_file(FILE *fin);
-    static huffman_tree from_tree_file(FILE *fin);
+    // Constructs a huffman tree from any given input file.
+    //
+    // fin - the file to read from.
+    static huffman_tree from_input_file(
+        FILE *fin);
 
+    // Constructs a huffman tree from a file containing the contents of
+    // huffman_tree::to_string.
+    //
+    // fin - the file to read from
+    static huffman_tree from_tree_file(
+        FILE *fin);
+
+    // Encodes a file with this huffman tree.  Returns a bitvector representing
+    // the encoded data. The method reads until EOF.
+    //
+    // fin - the file to read from
     bitvector encode(FILE *fin);
+
+    // Decodes a file using this huffman tree.  Quits if an impossible bit
+    // string is found.
+    // 
+    // fin - the file to read from
     std::string decode(FILE *fin);
+
+    // Returns a string representation of this huffman tree. This string can be
+    // saved and fed into huffman_tree::from_tree_file to construct a new tree.
+    //
+    // The EBNF of this string is
+    // ==========================
+    // Tree ::= N | E
+    // Node ::= B[C]
+    // Children ::= NN | E
+    // Byte ::= (character 'b' followed by a single byte)
+    // Empty ::= (the empty string)
     std::string to_string();
 
   private:
+    // An index mapping characters to their corresponding bit strings
+    bitvector *index[256];
+
+    // Constructs an empty tree w/ empty index and NULL root.
     huffman_tree();
+
+    // Goes over the file and counts the frequency of each byte.
+    //
+    // fin - the file to read from
+    // out - [out] an array of at least 256 ints
     static void freq_list(FILE *fin, int *out);
+
+    // Builds an index of characters to bitvectors to aid in the encoding.
     void build_index();
+
+    // Recursive parsing helper method. Reads a single node into the tree, and
+    // recursively adds its children too. It can be thought of the helper
+    // method to a DFS.
+    //
+    // node - pointer to where this node will be referenced in the tree.
+    // fin - file from which the tree is read.
+    static void readNode(huffman_node * &node, FILE *fin);
 };
 
 #endif

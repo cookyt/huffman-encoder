@@ -12,10 +12,9 @@ CC = g++ -g
 
 all: encode decode
 
-test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec)) ratios
-
-ratios:
+test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec))
 	@tests/ratios
+
 
 .SUFFIXES: .enc .dec .tree
 tests/%.enc tests/%.tree: encode input/%
