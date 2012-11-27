@@ -12,7 +12,7 @@ CC = g++ -g
 test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec)) ratios
 
 ratios:
-	tests/ratios
+	@tests/ratios
 
 all: encode decode
 
@@ -38,6 +38,6 @@ clean-tst:
 	-$(RM) tests/*.dec tests/*.enc tests/*.tree
 clean-bin:
 	-$(RM) decode encode
-clean-ag:
+clean-gh:
 	-$(RM) tags types_c.taghl
-clean-all: clean clean-tst clean-bin clean-tag
+clean-all: clean clean-tst clean-bin clean-gh
