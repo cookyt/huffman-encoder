@@ -25,6 +25,19 @@ bitvector::bitvector(FILE *fin)
     len = bits.size()*8 - offset;
 }
 
+bitvector::bitvector(std::string sin)
+{
+    int offset = sin.at(0);
+    assert(offset <= 7 && offset >= 0);
+
+    std::string::iterator it;
+    for (it = sin.begin(), it++; it != sin.end(); it++)
+    {
+        bits.push_back(*it);
+    }
+    len = bits.size()*8 - offset;
+}
+
 
 // Returns the number of bits in the vector
 int bitvector::size() const
@@ -46,29 +59,34 @@ const char *bitvector::c_array() const
     return &bits[0];
 }
 
-// returns a string representation of this bitvector containg ASCII 1's and 0's
+// returns a string representation of this bitvector. First byte id the offset
+// byte (number of unused bits at the end of the vector)
 std::string bitvector::to_string() const
 {
     std::string str = "";
-    for (int i=0; i<len; i++)
-    {
-        if (i%8 == 0 && i!=0)
-            str += ' ';
-        if ((*this)[i])
-            str += '1';
-        else
-            str += '0';
-    }
+    char offset = (7-(len-1)%8);
+    str += offset;
+    str.append(c_array(), char_size());
     return str;
 }
 
+char bitvector::char_at(int pos)
+{
+    char ret = '\0';
+    for (int i=7; i>=0; i--)
+    {
+        int bit = 1 ? (*this)[pos++] : 0;
+        ret |= (bit<<i);
+    }
+    return ret;
+}
 
 // Writes the entire vector to file. It prepends a single byte representing the
 // offset amount to the beginning of the file. The offset is the number of
 // unused bits in the last byte of the bitvector (0-7).
 void bitvector::to_file(FILE *fout) const
 {
-    int offset = (7-(len-1)%8);
+    char offset = (7-(len-1)%8);
     fputc(offset, fout);
     fwrite(c_array(), sizeof(char), char_size(), fout);
 }
@@ -92,6 +110,22 @@ bitvector& bitvector::operator +=(const bool rhs)
 
     if (rhs)
         bits[(len-1)/8] |= (1 << (7-(len-1)%8));
+
+    return *this;
+}
+
+// Appends a byte to this vector.
+bitvector& bitvector::operator +=(const char rhs)
+{
+    unsigned char mask = 0x80;
+    for (int i=0; i<8; i++)
+    {
+        if ((rhs&mask) == 0)
+            *this += false;
+        else
+            *this += true;
+        mask = mask >> 1;
+    }
 
     return *this;
 }
