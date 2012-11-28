@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "huffman/huffman_tree.h"
 #include "util/util.h"
@@ -21,20 +23,35 @@ string read_header(FILE *fin)
     return ret;
 }
 
+void help_and_die(char *program_path)
+{
+    printf(
+        "Huffman Decoder:\n"
+        "Decodes the given file. Decoded file is written to standard\n"
+        "output by default.\n\n"
+        "Usage: %s input-file [output-file]\n",
+        program_path);
+    exit(1);
+}
+
 int main(int argc, char **argv)
 {
-    if (argc != 2)
-    {
-        printf(
-            "Huffman Decoder:\n"
-            "Decodes the given file. Decoded file is written to standard\n"
-            "output.\n\n"
-            "Usage: %s input-file\n",
-            argv[0]);
-        return 1;
-    }
-    FILE *fin = sfopen(argv[1], "r");
+    FILE *fin;
     FILE *fout = stdout;
+
+    if (argc > 1)
+    {
+        if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+            help_and_die(argv[0]);
+
+        fin = sfopen(argv[1], "r");
+        if (argc > 2)
+            fout = sfopen(argv[2], "w");
+    }
+    else
+    {
+        help_and_die(argv[0]);
+    }
 
     string str = read_header(fin);
     huffman_tree tree = huffman_tree::from_tree_string(str);

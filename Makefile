@@ -10,21 +10,21 @@ test =	hamlet.orig \
 
 CC = g++ -g
 
-all: encode decode
+all: huffmanencode huffmandecode
 
 test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec))
 	@tests/ratios
 
 
 .SUFFIXES: .enc .dec
-tests/%.enc: encode input/%
-	./encode input/$(notdir $*) > $@
-%.dec: decode %.enc
-	./decode $*.enc > $@
+tests/%.enc: huffmanencode input/%
+	./$< input/$(notdir $*) > $@
+%.dec: huffmandecode %.enc
+	./$< $*.enc > $@
 
-encode: $(obj) encode.cc
+huffmanencode: $(obj) encode.cc
 	$(CC) $^ -I. -o $@
-decode: $(obj) decode.cc
+huffmandecode: $(obj) decode.cc
 	$(CC) $^ -I. -o $@
 
 %.o: %.cc %.h
@@ -37,7 +37,7 @@ clean:
 clean-tst:
 	-$(RM) tests/*.dec tests/*.enc tests/*.tree
 clean-bin:
-	-$(RM) decode encode
+	-$(RM) huffmandecode huffmanencode
 clean-gh:
 	-$(RM) tags types_c.taghl
 clean-all: clean clean-tst clean-bin clean-gh
