@@ -65,7 +65,7 @@ class huffman_tree
     // data - character buffer containing the huffman tree
     // pos - the position of the next character in the buffer (initially 0)
     // str_len - the number of characters in the buffer
-    static void readNode(huffman_node * &node, const char *data, int &pos,
+    static void readNode(huffman_node * &node, bitvector &data, int &pos,
                          int str_len);
 };
 

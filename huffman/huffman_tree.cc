@@ -7,7 +7,6 @@
 
 #include "huffman_tree.h"
 #include "huffman_node.h"
-#include "util/bitvector.h"
 
 using namespace std;
 
@@ -132,22 +131,23 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
     return tree;
 }
 
-void huffman_tree::readNode(huffman_node * &node, const char *data, int &pos,
+void huffman_tree::readNode(huffman_node * &node, bitvector &data, int &pos,
                             int str_len)
 {
     assert (pos < str_len);
-    char c = data[pos++];
+    bool b = data[pos++];
 
-    node = new huffman_node(0, c);
-    switch (c)
+    node = new huffman_node();
+    switch (b)
     {
-        case '0':
+        case false:
             readNode(node->left, data, pos, str_len);
             readNode(node->right, data, pos, str_len);
             break;
-        case '1':
+        case true:
             assert (pos < str_len);
-            node->ch = data[pos++];
+            node->ch = data.char_at(pos);
+            pos += 8;
             break;
         default:
             assert(false);
@@ -158,11 +158,12 @@ huffman_tree huffman_tree::from_tree_string(string tree_str)
 {
     huffman_tree tree;
 
-    if (tree_str.size() > 0)
+    bitvector data(tree_str);
+    if (tree_str.size() > 1)
     {
         // assert (data[0] == 'b');
         int pos=0;
-        readNode(tree.root, tree_str.data(), pos, tree_str.size());
+        readNode(tree.root, data, pos, data.size());
     }
 
     tree.build_index();
@@ -218,7 +219,7 @@ string huffman_tree::decode(FILE *fin)
 
 string huffman_tree::to_string()
 {
-    string output = "";
+    bitvector output;
     stack<huffman_node *> S;
 
     S.push(root);
@@ -234,11 +235,11 @@ string huffman_tree::to_string()
         
         if (node->left != NULL && node->right != NULL)
         {
-            output += '0';
+            output += false;
         }
         else
         {
-            output += '1';
+            output += true;
             output += node->ch;
         }
 
@@ -246,5 +247,5 @@ string huffman_tree::to_string()
         S.push(node->left);
     }
 
-    return output;
+    return output.to_string();
 }
