@@ -8,6 +8,8 @@
 #include <stack>
 #include <vector>
 
+#include "util/bitvector.h"
+
 using namespace std;
 
 // Represents a single node in a huffman tree.

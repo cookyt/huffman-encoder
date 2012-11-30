@@ -2,7 +2,8 @@
 #define HUFFMAN_TREE_H
 
 #include <string>
-#include "util/bitvector.h"
+
+class bitvector;
 
 // Class encapsulating a huffman tree. Once a tree is constructed, it can
 // be used to encode and decode files. Use the static
