@@ -8,9 +8,34 @@
 #include <stack>
 #include <vector>
 
-#include "huffman_node.h"
-
 using namespace std;
+
+// Represents a single node in a huffman tree.
+// A node is internal if neither of its children are NULL.
+class huffman_tree::node
+{
+  public:
+    node *left;
+    node *right;
+
+    // The character contained in this node
+    char ch;
+
+    // Frequency of this character (doesn't get set if tree is read from a
+    // tree file)
+    int freq;
+
+    // Cached bitstring represented by this node
+    bitvector bits;
+
+    node(int frequency=0, char chr='\0')
+    {
+        left = NULL;
+        right = NULL;
+        freq = frequency;
+        ch = chr;
+    }
+};
 
 // Constructs an empty tree w/ empty index and NULL root.
 huffman_tree::huffman_tree()
@@ -22,27 +47,27 @@ huffman_tree::huffman_tree()
     // Performs a DFS on the tree, deleting its nodes.
 huffman_tree::~huffman_tree()
 {
-    stack<huffman_node *> S;
+    stack<node *> S;
     S.push(root);
     while (!S.empty())
     {
-        huffman_node *node = S.top();
+        node *cur = S.top();
         S.pop();
 
-        if (node->left != NULL && node->right != NULL)
+        if (cur->left != NULL && cur->right != NULL)
         {
-            S.push(node->right);
-            S.push(node->left);
+            S.push(cur->right);
+            S.push(cur->left);
         }
         else
         {
             // For a huffman tree, either both nodes are NULL or both
             // nodes are not NULL, there can't be one NULL and another not
             // NULL.
-            assert(node->left == NULL && node->right == NULL);
+            assert(cur->left == NULL && cur->right == NULL);
         }
 
-        delete node;
+        delete cur;
     }
 }
 
@@ -74,28 +99,28 @@ void huffman_tree::build_index()
         return;
 
     // DFS on the tree, and build an array index mapping chars to bit strings
-    stack<huffman_node *> S;
+    stack<node *> S;
     S.push(root);
     while (!S.empty())
     {
-        huffman_node *node = S.top();
+        node *cur = S.top();
         S.pop();
 
-        if (node->left != NULL && node->right != NULL)
+        if (cur->left != NULL && cur->right != NULL)
         {
-            node->right->bits += node->bits;
-            node->left->bits += node->bits;
+            cur->right->bits += cur->bits;
+            cur->left->bits += cur->bits;
 
-            node->right->bits += true;
-            node->left->bits += false;
+            cur->right->bits += true;
+            cur->left->bits += false;
 
-            S.push(node->right);
-            S.push(node->left);
+            S.push(cur->right);
+            S.push(cur->left);
         }
         else
         {
-            assert(node->left == NULL && node->right == NULL);
-            index[(unsigned char)node->ch] = &(node->bits);
+            assert(cur->left == NULL && cur->right == NULL);
+            index[(unsigned char)cur->ch] = &(cur->bits);
         }
     }
 }
@@ -104,7 +129,7 @@ void huffman_tree::build_index()
 // huffman_tree::from_input_file
 struct huffman_tree::HuffLess
 {
-    bool operator()(huffman_node *p1, huffman_node *p2) const 
+    bool operator()(node *p1, node *p2) const 
     {
         return (p1->freq > p2->freq);
     }
@@ -122,27 +147,27 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
     int freq[256];
     freq_list(fin, freq);
 
-    priority_queue<huffman_node*, vector<huffman_node *>, HuffLess> Q;
+    priority_queue<node*, vector<node *>, HuffLess> Q;
     for (int i=0; i<256; i++)
     {
         if (freq[i] == 0)
             continue;
-        huffman_node *node = new huffman_node(freq[i], i);
-        Q.push(node);
+        node *cur = new node(freq[i], i);
+        Q.push(cur);
     }
 
     while (Q.size() > 1)
     {
-        huffman_node *lnode = Q.top(); Q.pop();
-        huffman_node *rnode = Q.top(); Q.pop();
-        huffman_node *node = new huffman_node(lnode->freq + rnode->freq);
-        node->left = lnode;
-        node->right = rnode;
-        Q.push(node);
+        node *lnode = Q.top(); Q.pop();
+        node *rnode = Q.top(); Q.pop();
+        node *cur = new node(lnode->freq + rnode->freq);
+        cur->left = lnode;
+        cur->right = rnode;
+        Q.push(cur);
     }
 
-    huffman_node *node = Q.top();
-    tree.root = node;
+    node *troot = Q.top();
+    tree.root = troot;
     tree.build_index();
 
     return tree;
@@ -156,22 +181,22 @@ huffman_tree huffman_tree::from_input_file(FILE *fin)
 // data - character buffer containing the huffman tree
 // pos - the position of the next character in the buffer (initially 0)
 // str_len - the number of characters in the buffer
-void huffman_tree::readNode(huffman_node * &node, bitvector &data, int &pos,
+void huffman_tree::readNode(node * &cur, bitvector &data, int &pos,
                             int str_len)
 {
     assert (pos < str_len);
     bool b = data[pos++];
 
-    node = new huffman_node();
+    cur = new node();
     switch (b)
     {
         case false:
-            readNode(node->left, data, pos, str_len);
-            readNode(node->right, data, pos, str_len);
+            readNode(cur->left, data, pos, str_len);
+            readNode(cur->right, data, pos, str_len);
             break;
         case true:
             assert (pos < str_len);
-            node->ch = data.char_at(pos);
+            cur->ch = data.char_at(pos);
             pos += 8;
             break;
         default:
@@ -201,7 +226,9 @@ huffman_tree huffman_tree::from_tree_string(string tree_str)
 // the encoded data. The method reads until EOF.
 //
 // fin - the file to read from
-bitvector huffman_tree::encode(FILE *fin)
+// include_header - whether the output string should include the
+//                  serialized header
+string huffman_tree::encode(FILE *fin, bool include_header)
 {
     bitvector output;
     for (;;)
@@ -212,7 +239,17 @@ bitvector huffman_tree::encode(FILE *fin)
         assert(index[c] != NULL);
         output += *(index[c]);
     }
-    return output;
+
+    if (include_header)
+    {
+        string out_str = serialize();
+        out_str += output.to_string();
+        return out_str;
+    }
+    else
+    {
+        return output.to_string();
+    }
 }
 
 // Decodes a file using this huffman tree.  Quits if an impossible bit
@@ -223,7 +260,7 @@ string huffman_tree::decode(FILE *fin)
 {
     string output = "";
     bitvector input(fin);
-    huffman_node *cur = root;
+    node *cur = root;
     for (int i=0; i<input.size(); i++)
     {
         assert(cur != NULL);
@@ -258,31 +295,31 @@ string huffman_tree::decode(FILE *fin)
 string huffman_tree::serialize()
 {
     bitvector output;
-    stack<huffman_node *> S;
+    stack<node *> S;
 
     S.push(root);
 
     //DFS loop
     while (!S.empty())
     {
-        huffman_node *node = S.top();
+        node *cur = S.top();
         S.pop();
 
-        if (node == NULL)
+        if (cur == NULL)
             continue;
         
-        if (node->left != NULL && node->right != NULL)
+        if (cur->left != NULL && cur->right != NULL)
         {
             output += false;
         }
         else
         {
             output += true;
-            output += node->ch;
+            output += cur->ch;
         }
 
-        S.push(node->right);
-        S.push(node->left);
+        S.push(cur->right);
+        S.push(cur->left);
     }
 
     string str_out = output.to_string();

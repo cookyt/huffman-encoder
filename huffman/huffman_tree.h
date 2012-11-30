@@ -4,13 +4,9 @@
 #include <string>
 #include "util/bitvector.h"
 
-class huffman_node;
-
 // Class encapsulating a huffman tree. Once a tree is constructed, it can
-// be used to encode and decode files. Default constructor is hidden
-// because the internals of how a tree is represented is hidden, so it
-// makes little sense to construct an empty tree. Instead, use the static
-// methods from_input_file and from_tree_string.
+// be used to encode and decode files. Use the static
+// methods from_input_file and from_tree_string to construct a tree.
 // Ex:
 //     huffman_tree encoding_tree = from_input_file(fin);
 //     huffman_tree decoding_tree = from_tree_string(tree_str);
@@ -25,23 +21,29 @@ class huffman_tree
     static huffman_tree from_input_file(FILE *fin);
     static huffman_tree from_tree_string(std::string tree_str);
 
-    bitvector encode(FILE *fin);
+    std::string encode(FILE *fin, bool include_header=true);
     std::string decode(FILE *fin);
     std::string serialize();
 
   private:
-    huffman_node *root;
+    struct HuffLess;
+    class node;
+
+    node *root;
 
     // An index mapping characters to their corresponding bit strings It's
     // indexed by unsigned character values, for example: index['a']
     bitvector *index[256];
 
+    // Default constructor is hidden because the internals of how a tree is
+    // represented is hidden, so it makes little sense to construct an empty
+    // tree. 
     huffman_tree();
+
     static void freq_list(FILE *fin, int *out);
     void build_index();
-    static void readNode(huffman_node * &node, bitvector &data, int &pos,
+    static void readNode(node * &cur, bitvector &data, int &pos,
                          int str_len);
-    struct HuffLess;
 };
 
 #endif

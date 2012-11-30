@@ -44,10 +44,8 @@ int main(int argc, char **argv)
     rewind(fin);
 
     // write the encoded data out
-    string tree_str = tree.serialize();
-    fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);
-
-    tree.encode(fin).to_file(fout);
+    string encoded = tree.encode(fin);
+    fwrite(encoded.data(), sizeof(char), encoded.size(), fout);
 
     fclose(fin);
     fclose(fout);

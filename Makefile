@@ -1,5 +1,4 @@
 obj = 	huffman/huffman_tree.o \
-		huffman/huffman_node.o \
 		util/util.o \
 		util/bitvector.o
 
