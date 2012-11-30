@@ -13,7 +13,7 @@ using namespace std;
 // Prepends the huffman tree and its length to the output file
 void write_header(FILE *fout, huffman_tree& tree)
 {
-    string tree_str = tree.to_string();
+    string tree_str = tree.serialize();
     uint16_t tree_len = tree_str.size();
     fwrite(&tree_len, sizeof(tree_len), 1, fout);
     fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);

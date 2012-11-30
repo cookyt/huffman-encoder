@@ -179,7 +179,7 @@ void huffman_tree::readNode(huffman_node * &node, bitvector &data, int &pos,
 }
 
 // Constructs a huffman tree from a string containing the contents of
-// huffman_tree::to_string. It also builds the index when it's done.
+// huffman_tree::serialize. It also builds the index when it's done.
 huffman_tree huffman_tree::from_tree_string(string tree_str)
 {
     huffman_tree tree;
@@ -254,7 +254,7 @@ string huffman_tree::decode(FILE *fin)
 // Returns a string representation of this huffman tree. This string can be
 // saved and fed into huffman_tree::from_tree_string  to construct a new
 // tree.
-string huffman_tree::to_string()
+string huffman_tree::serialize()
 {
     bitvector output;
     stack<huffman_node *> S;

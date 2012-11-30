@@ -17,8 +17,6 @@ class huffman_node;
 // from_input_file is usually used to construct trees to encode plain
 // files, from_tree_string is usually used to construct trees to decode
 // files.
-//
-//
 class huffman_tree
 {
   public:
@@ -29,7 +27,7 @@ class huffman_tree
 
     bitvector encode(FILE *fin);
     std::string decode(FILE *fin);
-    std::string to_string();
+    std::string serialize();
 
   private:
     huffman_node *root;
