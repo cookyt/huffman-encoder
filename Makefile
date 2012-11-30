@@ -35,7 +35,7 @@ huffmandecode: $(obj) decode.cc
 clean:
 	-$(RM) *.o huffman/*.o util/*.o
 clean-tst:
-	-$(RM) tests/*.dec tests/*.enc tests/*.tree
+	-$(RM) tests/*.dec tests/*.enc
 clean-bin:
 	-$(RM) huffmandecode huffmanencode
 clean-gh:
