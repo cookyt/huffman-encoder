@@ -52,15 +52,15 @@ int bitvector::char_size() const
     return bits.size();
 }
 
-// Returns a pointer to a char array representing the bits. These characters
-// should not be changed.
+// Returns a pointer to a char array representing the bits. These
+// characters should not be changed.
 const char *bitvector::c_array() const
 {
     return &bits[0];
 }
 
-// returns a string representation of this bitvector. First byte id the offset
-// byte (number of unused bits at the end of the vector)
+// returns a string containing a copy of this bitvector. First byte is the
+// offset byte (number of unused bits at the end of the vector)
 std::string bitvector::to_string() const
 {
     std::string str = "";

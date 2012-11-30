@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <stdint.h>
 
 #include "huffman/huffman_tree.h"
 #include "util/util.h"
@@ -11,7 +12,7 @@ using namespace std;
 
 string read_header(FILE *fin)
 {
-    unsigned short tree_len;
+    uint16_t tree_len;
     fread(&tree_len, sizeof(tree_len), 1, fin);
 
     char *tree_str = new char[tree_len];

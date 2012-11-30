@@ -2,21 +2,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <stdint.h>
 
 #include "huffman/huffman_tree.h"
 #include "util/util.h"
 #include "util/bitvector.h"
 
 using namespace std;
-
-// Prepends the huffman tree and its length to the output file
-void write_header(FILE *fout, huffman_tree& tree)
-{
-    string tree_str = tree.to_string();
-    unsigned short tree_len = tree_str.size();
-    fwrite(&tree_len, sizeof(tree_len), 1, fout);
-    fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);
-}
 
 void help_and_die(char *program_path)
 {
@@ -52,8 +44,8 @@ int main(int argc, char **argv)
     rewind(fin);
 
     // write the encoded data out
-    write_header(fout, tree);
-    tree.encode(fin).to_file(fout);
+    string encoded = tree.encode(fin);
+    fwrite(encoded.data(), sizeof(char), encoded.size(), fout);
 
     fclose(fin);
     fclose(fout);

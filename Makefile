@@ -1,5 +1,4 @@
 obj = 	huffman/huffman_tree.o \
-		huffman/huffman_node.o \
 		util/util.o \
 		util/bitvector.o
 
@@ -35,7 +34,7 @@ huffmandecode: $(obj) decode.cc
 clean:
 	-$(RM) *.o huffman/*.o util/*.o
 clean-tst:
-	-$(RM) tests/*.dec tests/*.enc tests/*.tree
+	-$(RM) tests/*.dec tests/*.enc
 clean-bin:
 	-$(RM) huffmandecode huffmanencode
 clean-gh:
