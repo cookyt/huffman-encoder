@@ -11,17 +11,17 @@ class huffman_node
     huffman_node *left;
     huffman_node *right;
 
-    //The character contained in this node
+    huffman_node(int frequency=0, char chr='\0');
+
+    // The character contained in this node
     char ch;
 
-    //Frequency of this character (doesn't get set if tree is read from a tree
-    //file)
+    // Frequency of this character (doesn't get set if tree is read from a
+    // tree file)
     int freq;
 
-    //Cached bitstring represented by this node
+    // Cached bitstring represented by this node
     bitvector bits;
-
-    huffman_node(int frequency=0, char chr='\0');
 };
 
 #endif
