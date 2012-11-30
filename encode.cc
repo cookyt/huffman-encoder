@@ -10,15 +10,6 @@
 
 using namespace std;
 
-// Prepends the huffman tree and its length to the output file
-void write_header(FILE *fout, huffman_tree& tree)
-{
-    string tree_str = tree.serialize();
-    uint16_t tree_len = tree_str.size();
-    fwrite(&tree_len, sizeof(tree_len), 1, fout);
-    fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);
-}
-
 void help_and_die(char *program_path)
 {
     printf(
@@ -53,7 +44,9 @@ int main(int argc, char **argv)
     rewind(fin);
 
     // write the encoded data out
-    write_header(fout, tree);
+    string tree_str = tree.serialize();
+    fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);
+
     tree.encode(fin).to_file(fout);
 
     fclose(fin);

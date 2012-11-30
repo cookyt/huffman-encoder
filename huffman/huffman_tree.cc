@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <stdint.h>
 #include <queue>
 #include <stack>
 #include <vector>
@@ -284,5 +285,8 @@ string huffman_tree::serialize()
         S.push(node->left);
     }
 
-    return output.to_string();
+    string str_out = output.to_string();
+    uint16_t len = str_out.size();
+    str_out.insert(0, (const char *) &len, sizeof(len));
+    return str_out;
 }
