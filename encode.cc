@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <stdint.h>
 
 #include "huffman/huffman_tree.h"
 #include "util/util.h"
@@ -13,7 +14,7 @@ using namespace std;
 void write_header(FILE *fout, huffman_tree& tree)
 {
     string tree_str = tree.to_string();
-    unsigned short tree_len = tree_str.size();
+    uint16_t tree_len = tree_str.size();
     fwrite(&tree_len, sizeof(tree_len), 1, fout);
     fwrite(tree_str.data(), sizeof(char), tree_str.size(), fout);
 }
