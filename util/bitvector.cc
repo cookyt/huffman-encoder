@@ -1,5 +1,5 @@
 #include <cassert>
-#include "bitvector.h"
+#include "util/bitvector.h"
 
 //Constructs an empty bitvector
 bitvector::bitvector()
