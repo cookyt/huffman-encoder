@@ -2,16 +2,14 @@ obj = 	huffman/huffman_tree.o \
 		util/util.o \
 		util/bitvector.o
 
-test =	hamlet.orig \
-		juliuscaesar.orig \
-		macbeth.orig \
-		othello.orig
+enc = $(addsuffix .enc, $(addprefix tests/, $(notdir $(wildcard ./input/*))))
+dec = $(enc:.enc=.dec)
 
 CC = g++ -g
 
 all: huffmanencode huffmandecode
 
-test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec))
+test: $(enc) $(dec)
 	@tests/ratios
 
 
