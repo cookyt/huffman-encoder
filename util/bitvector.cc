@@ -70,6 +70,8 @@ std::string bitvector::to_string() const
     return str;
 }
 
+// Returns a single byte starting at the bit value pos. pos need not be aligned
+// to 8 bits.
 char bitvector::char_at(int pos)
 {
     char ret = '\0';
@@ -95,9 +97,7 @@ void bitvector::to_file(FILE *fout) const
 bitvector& bitvector::operator +=(const bitvector& rhs)
 {
     for (int i=0; i<rhs.size(); i++)
-    {
         *this += rhs[i];
-    }
     return *this;
 }
 
