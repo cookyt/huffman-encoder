@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         help_and_die(argv[0]);
     }
 
-    huffman_tree tree = huffman_tree::from_input_file(fin);
+    huffman_tree tree = huffman_tree::generate(fin);
     rewind(fin);
 
     // write the encoded data out

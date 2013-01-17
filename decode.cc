@@ -10,20 +10,6 @@
 
 using namespace std;
 
-string read_header(FILE *fin)
-{
-    uint16_t tree_len;
-    fread(&tree_len, sizeof(tree_len), 1, fin);
-
-    char *tree_str = new char[tree_len];
-    fread(tree_str, sizeof(*tree_str), tree_len, fin);
-    
-    string ret(tree_str, tree_len);
-
-    delete[] tree_str;
-    return ret;
-}
-
 void help_and_die(char *program_path)
 {
     printf(
@@ -54,8 +40,7 @@ int main(int argc, char **argv)
         help_and_die(argv[0]);
     }
 
-    string str = read_header(fin);
-    huffman_tree tree = huffman_tree::from_tree_string(str);
+    huffman_tree tree = huffman_tree::parse(fin);
 
     string decoded = tree.decode(fin);
     fwrite(decoded.data(), sizeof(char), decoded.size(), fout);
