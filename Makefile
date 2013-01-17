@@ -5,28 +5,31 @@ obj = 	huffman/huffman_tree.o \
 enctest = $(addsuffix .enc, $(addprefix tests/, $(notdir $(wildcard ./input/*))))
 dectest = $(enctest:.enc=.dec)
 
-encname = encode
-decname = decode
+bin = huf
+header_size = header_size
+
+encode = ./$(bin) -e
+decode = ./$(bin) -d
 
 CC = g++ -g
 
-all: $(encname) $(decname)
+all: $(bin)
 
 test: $(enctest) $(dectest)
 	@tests/ratios
 
-
 .SUFFIXES: .enc .dec
-tests/%.enc: $(encname) input/%
-	./$< input/$(notdir $*) > $@
-%.dec: $(decname) %.enc
-	./$< $*.enc > $@
+tests/%.enc: $(bin) input/%
+	$(encode) input/$(notdir $*) > $@
+%.dec: $(bin) %.enc
+	$(decode) $*.enc > $@
 
-$(encname): $(obj) encode.cc
-	$(CC) $^ -I. -o $@
-$(decname): $(obj) decode.cc
+$(bin): $(obj) huf.cc
 	$(CC) $^ -I. -o $@
 
+$(header_size): header_size.cc
+	$(CC) $^ -I. -o $@
+	
 %.o: %.cc %.h
 	$(CC) -c $< -I. -o $@
 %.o: %.cc
@@ -37,7 +40,7 @@ clean:
 clean-tst:
 	-$(RM) tests/*.dec tests/*.enc
 clean-bin:
-	-$(RM) $(encname) $(decname)
+	-$(RM) $(bin) $(header_size)
 clean-gh:
 	-$(RM) tags types_c.taghl
 clean-all: clean clean-tst clean-bin clean-gh
