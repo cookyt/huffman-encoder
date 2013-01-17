@@ -1,4 +1,5 @@
 #include <string>
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -26,21 +27,28 @@ void help_and_die(char *program_path)
     exit(1);
 }
 
+enum UsageMode
+{
+    USE_ENCODE,
+    USE_DECODE
+};
+
 int main(int argc, char **argv)
 {
     FILE *fin;
     FILE *fout = stdout;
-    bool encode_mode;
+    UsageMode mode;
 
+    //Parse options and display help text if needed.
     if (argc >= 3)
     {
         if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
             help_and_die(argv[0]);
 
         if (strcmp(argv[1], "-e") == 0)
-            encode_mode = true;
+            mode = USE_ENCODE;
         else if (strcmp(argv[1], "-d") == 0)
-            encode_mode = false;
+            mode = USE_DECODE;
         else
             help_and_die(argv[0]);
 
@@ -53,21 +61,31 @@ int main(int argc, char **argv)
         help_and_die(argv[0]);
     }
 
-    if (encode_mode)
+    //Build huffman tree and process input file by either encoding it or
+    //decoding it
+    string output;
+    switch (mode)
     {
-        huffman_tree tree = huffman_tree::generate(fin);
-        rewind(fin);
-
-        string encoded = tree.encode(fin);
-        fwrite(encoded.data(), sizeof(char), encoded.size(), fout);
+        case USE_ENCODE:
+        {
+            huffman_tree tree = huffman_tree::generate(fin);
+            rewind(fin);
+            output = tree.encode(fin);
+            break;
+        }
+        case USE_DECODE:
+        {
+            huffman_tree tree = huffman_tree::parse(fin);
+            output = tree.decode(fin);
+            break;
+        }
+        default:
+            //should never get here
+            assert(false);
     }
-    else
-    {
-        huffman_tree tree = huffman_tree::parse(fin);
 
-        string decoded = tree.decode(fin);
-        fwrite(decoded.data(), sizeof(char), decoded.size(), fout);
-    }
+    //Write processed data out to file
+    fwrite(output.data(), sizeof(char), output.size(), fout);
 
     fclose(fin);
     fclose(fout);
