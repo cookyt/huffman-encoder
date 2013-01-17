@@ -144,17 +144,42 @@ struct huffman_tree::HuffLess
 // fin - the file to read from.
 huffman_tree huffman_tree::generate(FILE *fin)
 {
-    huffman_tree tree;
-
     int freq[256];
-    freq_list(fin, freq);
+    bzero(freq, 256*sizeof(*freq));
+    for (;;)
+    {
+        unsigned char c = fgetc(fin);
+        if (feof(fin))
+            break;
+        freq[c]++;
+    }
 
+    return huffman_tree::generate(freq);
+}
+
+huffman_tree huffman_tree::generate(std::string input)
+{
+    int freq[256];
+    bzero(freq, 256*sizeof(*freq));
+
+    string::iterator it;
+    for (it = input.begin(), ++it; it != input.end(); ++it)
+    {
+        unsigned char c = *it;
+        freq[c]++;
+    }
+    return huffman_tree::generate(freq);
+}
+
+huffman_tree huffman_tree::generate(int frequencies[256])
+{
+    huffman_tree tree;
     priority_queue<node*, vector<node *>, HuffLess> Q;
     for (int i=0; i<256; i++)
     {
-        if (freq[i] == 0)
+        if (frequencies[i] == 0)
             continue;
-        node *cur = new node(freq[i], i);
+        node *cur = new node(frequencies[i], i);
         Q.push(cur);
     }
 
