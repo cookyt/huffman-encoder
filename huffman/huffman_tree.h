@@ -7,24 +7,33 @@ class bitvector;
 
 // Class encapsulating a huffman tree. Once a tree is constructed, it can
 // be used to encode and decode files. Use the static
-// methods from_input_file and from_tree_string to construct a tree.
+// methods generate and parse to construct a tree.
 // Ex:
-//     huffman_tree encoding_tree = from_input_file(fin);
-//     huffman_tree decoding_tree = from_tree_string(tree_str);
-// from_input_file is usually used to construct trees to encode plain
-// files, from_tree_string is usually used to construct trees to decode
+//     huffman_tree encoding_tree = generate(fin);
+//     huffman_tree decoding_tree = parse(tree_str);
+// generate is usually used to construct trees to encode plain
+// files, parse is usually used to construct trees to decode
 // files.
 class huffman_tree
 {
   public:
     ~huffman_tree();
 
-    static huffman_tree from_input_file(FILE *fin);
-    static huffman_tree from_tree_string(std::string tree_str);
+    // static huffman_tree from_input_file(FILE *fin);
+    // static huffman_tree parse(std::string tree_str);
+
+    static huffman_tree generate(FILE *fin);
+    static huffman_tree generate(std::string input);
+    static huffman_tree generate(int frequencies[256]);
+
+    static huffman_tree parse(FILE *ftree);
+    static huffman_tree parse(std::string tree_str);
+    static huffman_tree parse(bitvector tree_vec);
 
     std::string encode(FILE *fin, bool include_header=true);
     std::string decode(FILE *fin);
     std::string serialize();
+    void serialize(FILE *fout);
 
   private:
     struct HuffLess;

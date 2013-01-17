@@ -31,9 +31,21 @@ bitvector::bitvector(std::string sin)
     assert(offset <= 7 && offset >= 0);
 
     std::string::iterator it;
-    for (it = sin.begin(), it++; it != sin.end(); it++)
+    for (it = sin.begin(), ++it; it != sin.end(); ++it)
     {
         bits.push_back(*it);
+    }
+    len = bits.size()*8 - offset;
+}
+
+bitvector::bitvector(char *sin, int str_len)
+{
+    int offset = sin[0];
+    assert(offset <= 7 && offset >= 0);
+
+    for (int i=1; i<str_len; i++)
+    {
+        bits.push_back(sin[i]);
     }
     len = bits.size()*8 - offset;
 }
