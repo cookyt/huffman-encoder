@@ -14,6 +14,7 @@ class bitvector
     bitvector();
     bitvector(FILE *fin);
     bitvector(std::string sin);
+    bitvector(char *sin, int len);
 
     int size() const;
     int char_size() const;

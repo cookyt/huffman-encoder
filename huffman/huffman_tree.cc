@@ -128,7 +128,7 @@ void huffman_tree::build_index()
 }
 
 // Comparator used in the priority queue implementation of
-// huffman_tree::from_input_file
+// huffman_tree::generate
 struct huffman_tree::HuffLess
 {
     bool operator()(node *p1, node *p2) const 
@@ -142,19 +142,44 @@ struct huffman_tree::HuffLess
 // from that. It also builds the index when it's done.
 //
 // fin - the file to read from.
-huffman_tree huffman_tree::from_input_file(FILE *fin)
+huffman_tree huffman_tree::generate(FILE *fin)
+{
+    int freq[256];
+    bzero(freq, 256*sizeof(*freq));
+    for (;;)
+    {
+        unsigned char c = fgetc(fin);
+        if (feof(fin))
+            break;
+        freq[c]++;
+    }
+
+    return huffman_tree::generate(freq);
+}
+
+huffman_tree huffman_tree::generate(std::string input)
+{
+    int freq[256];
+    bzero(freq, 256*sizeof(*freq));
+
+    string::iterator it;
+    for (it = input.begin(), ++it; it != input.end(); ++it)
+    {
+        unsigned char c = *it;
+        freq[c]++;
+    }
+    return huffman_tree::generate(freq);
+}
+
+huffman_tree huffman_tree::generate(int frequencies[256])
 {
     huffman_tree tree;
-
-    int freq[256];
-    freq_list(fin, freq);
-
     priority_queue<node*, vector<node *>, HuffLess> Q;
     for (int i=0; i<256; i++)
     {
-        if (freq[i] == 0)
+        if (frequencies[i] == 0)
             continue;
-        node *cur = new node(freq[i], i);
+        node *cur = new node(frequencies[i], i);
         Q.push(cur);
     }
 
@@ -206,18 +231,39 @@ void huffman_tree::readNode(node * &cur, bitvector &data, int &pos,
     }
 }
 
-// Constructs a huffman tree from a string containing the contents of
-// huffman_tree::serialize. It also builds the index when it's done.
-huffman_tree huffman_tree::from_tree_string(string tree_str)
+// Constructs a huffman tree from the header of a file containing the output of
+// huffman_tree::encode. The difference between this header and the output of
+// huffman_tree::serialize is that the header contains a 2-byte, little endian,
+// unsigned int at the top specifying the length of the header.
+huffman_tree huffman_tree::parse(FILE *ftree)
+{
+    uint16_t tree_len;
+    fread(&tree_len, sizeof(tree_len), 1, ftree);
+
+    char *tree_chr = new char[tree_len];
+    fread(tree_chr, sizeof(*tree_chr), tree_len, ftree);
+
+    bitvector data(tree_chr, tree_len);
+    return huffman_tree::parse(data);
+}
+
+// Constructs a huffman tree from a string containing the output of
+// huffman_tree::serialize.
+huffman_tree huffman_tree::parse(string tree_str)
+{
+    bitvector data(tree_str);
+    return huffman_tree::parse(data);
+}
+
+// Constructs a huffman tree from a bitvector containing the output of
+// huffman_tree::serialize.
+huffman_tree huffman_tree::parse(bitvector tree_vec)
 {
     huffman_tree tree;
-
-    bitvector data(tree_str);
-    if (tree_str.size() > 1)
+    if (tree_vec.size() > 0)
     {
-        // assert (data[0] == 'b');
         int pos=0;
-        readNode(tree.root, data, pos, data.size());
+        readNode(tree.root, tree_vec, pos, tree_vec.size());
     }
 
     tree.build_index();
@@ -238,8 +284,8 @@ string huffman_tree::encode(FILE *fin, bool include_header)
         unsigned char c = fgetc(fin);
         if (feof(fin))
             break;
-        assert(index[c] != NULL);
-        output += *(index[c]);
+        assert(this->index[c] != NULL);
+        output += *(this->index[c]);
     }
 
     if (include_header)
@@ -292,7 +338,7 @@ string huffman_tree::decode(FILE *fin)
 }
 
 // Returns a string representation of this huffman tree. This string can be
-// saved and fed into huffman_tree::from_tree_string  to construct a new
+// saved and fed into huffman_tree::parse  to construct a new
 // tree.
 string huffman_tree::serialize()
 {
