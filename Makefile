@@ -2,28 +2,29 @@ obj = 	huffman/huffman_tree.o \
 		util/util.o \
 		util/bitvector.o
 
-test =	hamlet.orig \
-		juliuscaesar.orig \
-		macbeth.orig \
-		othello.orig
+enctest = $(addsuffix .enc, $(addprefix tests/, $(notdir $(wildcard ./input/*))))
+dectest = $(enctest:.enc=.dec)
+
+encname = encode
+decname = decode
 
 CC = g++ -g
 
-all: huffmanencode huffmandecode
+all: $(encname) $(decname)
 
-test: $(addprefix tests/, $(test:.orig=.enc)) $(addprefix tests/, $(test:.orig=.dec))
+test: $(enctest) $(dectest)
 	@tests/ratios
 
 
 .SUFFIXES: .enc .dec
-tests/%.enc: huffmanencode input/%
+tests/%.enc: $(encname) input/%
 	./$< input/$(notdir $*) > $@
-%.dec: huffmandecode %.enc
+%.dec: $(decname) %.enc
 	./$< $*.enc > $@
 
-huffmanencode: $(obj) encode.cc
+$(encname): $(obj) encode.cc
 	$(CC) $^ -I. -o $@
-huffmandecode: $(obj) decode.cc
+$(decname): $(obj) decode.cc
 	$(CC) $^ -I. -o $@
 
 %.o: %.cc %.h
@@ -36,7 +37,7 @@ clean:
 clean-tst:
 	-$(RM) tests/*.dec tests/*.enc
 clean-bin:
-	-$(RM) huffmandecode huffmanencode
+	-$(RM) $(encname) $(decname)
 clean-gh:
 	-$(RM) tags types_c.taghl
 clean-all: clean clean-tst clean-bin clean-gh
