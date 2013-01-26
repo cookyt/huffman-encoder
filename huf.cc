@@ -13,7 +13,7 @@ using namespace std;
 
 void help_and_die(char *program_path)
 {
-    printf(
+    fprintf(stderr,
         "Huffman Encoder/Decoder:\n"
         "Encodes or decodes the given file. Output is written to standard\n"
         "output by default.\n\n"

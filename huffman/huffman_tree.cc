@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <cstdio>
-#include <cstring>
+#include <string.h>
 #include <stdint.h>
 #include <queue>
 #include <stack>
@@ -42,7 +42,7 @@ class huffman_tree::node
 // Constructs an empty tree w/ empty index and NULL root.
 huffman_tree::huffman_tree()
 {
-    bzero(index, 256*sizeof(*index));
+    memset(index, 0, 256*sizeof(*index));
     root = NULL;
 }
 
@@ -79,7 +79,7 @@ huffman_tree::~huffman_tree()
 // out - [out] an array of at least 256 ints
 void huffman_tree::freq_list(FILE *fin, int *out)
 {
-    bzero(out, 256*sizeof(*out));
+    memset(out, 0, 256*sizeof(*out));
     for (;;)
     {
         unsigned char c = fgetc(fin);
@@ -95,7 +95,7 @@ void huffman_tree::freq_list(FILE *fin, int *out)
 // context of the tree.
 void huffman_tree::build_index()
 {
-    bzero(index, 256*sizeof(*index));
+    memset(index, 0, 256*sizeof(*index));
 
     if (root == NULL)
         return;
@@ -145,7 +145,7 @@ struct huffman_tree::HuffLess
 huffman_tree huffman_tree::generate(FILE *fin)
 {
     int freq[256];
-    bzero(freq, 256*sizeof(*freq));
+    memset(freq, 0, 256*sizeof(*freq));
     for (;;)
     {
         unsigned char c = fgetc(fin);
@@ -160,7 +160,7 @@ huffman_tree huffman_tree::generate(FILE *fin)
 huffman_tree huffman_tree::generate(std::string input)
 {
     int freq[256];
-    bzero(freq, 256*sizeof(*freq));
+    memset(freq, 0, 256*sizeof(*freq));
 
     string::iterator it;
     for (it = input.begin(), ++it; it != input.end(); ++it)
