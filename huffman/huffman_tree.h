@@ -19,9 +19,6 @@ class huffman_tree
   public:
     ~huffman_tree();
 
-    // static huffman_tree from_input_file(FILE *fin);
-    // static huffman_tree parse(std::string tree_str);
-
     static huffman_tree generate(FILE *fin);
     static huffman_tree generate(std::string input);
     static huffman_tree generate(int frequencies[256]);
