@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 {
     FILE *fin;
     FILE *fout = stdout;
-    UsageMode mode;
+    UsageMode mode = USE_ENCODE;
 
     //Parse options and display help text if needed.
     if (argc >= 3)
