@@ -1,50 +1,27 @@
 #Contents
     1. Introduction
-
         1.1 Goals
-
         1.2 Build Instructions
-
         1.3 Interface
-
     2. Implementation
-
         2.1 Huffman Tree
-
             2.1.1 Encoding
-
                 2.1.1.1 First Pass
-
                     2.1.1.1.1 Frequency analysis
-
                     2.1.1.1.2 Tree building
-
                     2.1.1.1.3 Indexing characters
-
                 2.1.1.2 Second Pass
-
             2.1.2 Decoding
-
                 2.1.2.1 Tree Files
-
                     2.1.2.1.1 Saving the Trees
-
                         2.1.2.1.1.1 Directly as a Tree
-
                         2.1.2.1.1.2 Frequency List
-
                         2.1.2.1.1.3 Multiple Files vs. Single Files
-
                     2.1.2.1.2 Reading the Tree
-
                     2.1.2.1.3 The Tree-Walking Method
-
         2.2 Bit Vectors
-
     3. Results
-
         3.1 Possible Directions
-
 
 #1. Introduction
 ##1.1 Goals
@@ -57,26 +34,34 @@ section on how well these tools do against different types of files,
 and a discussion on possible ways to improve on them.
 
 ##1.2 Build Instructions
-The tools are built using the g++ compiler and GNU Make on a Linux
-machine. It is probably possible to build them on a Windows machine
-using Cygwin or MinGW, but this has not been tested.
+The tools are built using the g++ compiler and GNU Make on a Linux machine. It
+is probably possible to build them on a Windows machine using Cygwin or MinGW,
+but this has not been tested. There are no dependancies other than the standard
+libraries.
 
-To build the tools, simply call `make` in the root directory. Two
-binary files should be produced: `huffmanencode` and `huffmandecode`.
+To build the tools, simply call `make` in the root directory. This will produce
+the binary `huf`.
 
 ##1.3 Interface
 Each of the tools takes a mandatory input file and an optional output
 file as arguments. If no output file is specified, the output is
 printed to standard output. To call, simply type one of
 
-    huffmanencode input [output]
-    huffmandecode input [output]
+    huf -e input [output]
+
+to encode a file, and 
+
+    huf -d input [output]
+
+to decode it.
 
 The brackets indicate an optional parameter, and should not be typed
 literally.
 
 Each of these calls will produce a single output file, and the output
-`huffmanencode` becomes the input to `huffmandecode`.
+`huf -e` becomes the input to `huf -d`. Note, without a switch, the program
+defaults to encoding a file, and calling it as `dehuf` (via symlinking or
+renaming the binary) will make it default to decoding.
 
 
 #2. Implementation
@@ -441,7 +426,7 @@ format. The images themselves consisted of large, single-color areas,
 so there were a great many bytes of the same type which is just the
 situation where huffman encoding workds very well.
 
-##3.1 Possible Directions
+##3.1 Possible future work
 There are a few ideas which I would have liked to implement but which
 I could not due to time constraints. The first is a block encoding
 scheme which breaks files into several blocks and builds trees for
