@@ -1,49 +1,49 @@
 #Contents
-1\. Introduction
+    1. Introduction
 
-    1.1 Goals
+        1.1 Goals
 
-    1.2 Build Instructions
+        1.2 Build Instructions
 
-    1.3 Interface
+        1.3 Interface
 
-2\. Implementation
+    2. Implementation
 
-    2.1 Huffman Tree
+        2.1 Huffman Tree
 
-        2.1.1 Encoding
+            2.1.1 Encoding
 
-            2.1.1.1 First Pass
+                2.1.1.1 First Pass
 
-                2.1.1.1.1 Frequency analysis
+                    2.1.1.1.1 Frequency analysis
 
-                2.1.1.1.2 Tree building
+                    2.1.1.1.2 Tree building
 
-                2.1.1.1.3 Indexing characters
+                    2.1.1.1.3 Indexing characters
 
-            2.1.1.2 Second Pass
+                2.1.1.2 Second Pass
 
-        2.1.2 Decoding
+            2.1.2 Decoding
 
-            2.1.2.1 Tree Files
+                2.1.2.1 Tree Files
 
-                2.1.2.1.1 Saving the Trees
+                    2.1.2.1.1 Saving the Trees
 
-                    2.1.2.1.1.1 Directly as a Tree
+                        2.1.2.1.1.1 Directly as a Tree
 
-                    2.1.2.1.1.2 Frequency List
+                        2.1.2.1.1.2 Frequency List
 
-                    2.1.2.1.1.3 Multiple Files vs. Single Files
+                        2.1.2.1.1.3 Multiple Files vs. Single Files
 
-                2.1.2.1.2 Reading the Tree
+                    2.1.2.1.2 Reading the Tree
 
-                2.1.2.1.3 The Tree-Walking Method
+                    2.1.2.1.3 The Tree-Walking Method
 
-    2.2 Bit Vectors
+        2.2 Bit Vectors
 
-3\. Results
+    3. Results
 
-    3.1 Possible Directions
+        3.1 Possible Directions
 
 
 #1. Introduction
