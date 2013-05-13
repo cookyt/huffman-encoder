@@ -1,5 +1,18 @@
+#include <cstdlib>
 #include <cassert>
+#include <iostream>
 #include "util/bitvector.h"
+
+const char *kBadOffsetErrorMsg = "Invalid offset in input. Aborting.";
+
+void check_offset(int offset)
+{
+    if (offset > 7 || offset < 0)
+    {
+        std::cerr << kBadOffsetErrorMsg << std::endl;
+        exit(EXIT_FAILURE);
+    }
+}
 
 //Constructs an empty bitvector
 bitvector::bitvector()
@@ -13,7 +26,7 @@ bitvector::bitvector()
 bitvector::bitvector(FILE *fin)
 {
     int offset = fgetc(fin);
-    assert(offset <= 7 && offset >= 0);
+    check_offset(offset);
     for (;;)
     {
         char c = fgetc(fin);
@@ -28,7 +41,7 @@ bitvector::bitvector(FILE *fin)
 bitvector::bitvector(std::string sin)
 {
     int offset = sin.at(0);
-    assert(offset <= 7 && offset >= 0);
+    check_offset(offset);
 
     std::string::iterator it;
     for (it = sin.begin(), ++it; it != sin.end(); ++it)
@@ -41,7 +54,7 @@ bitvector::bitvector(std::string sin)
 bitvector::bitvector(char *sin, int str_len)
 {
     int offset = sin[0];
-    assert(offset <= 7 && offset >= 0);
+    check_offset(offset);
 
     for (int i=1; i<str_len; i++)
     {
