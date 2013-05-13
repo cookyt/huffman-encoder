@@ -10,12 +10,14 @@
 #include "util/bitvector.h"
 
 const char *kDecodeBinName = "dehuf";
+const char *kEncodeBinName = "huf";
 const char *kInputFileErrorMsg = "Must specify an input file when encoding.";
 
 enum UsageMode
 {
     USE_ENCODE,
-    USE_DECODE
+    USE_DECODE,
+    USE_UNKNOWN
 };
 
 void help_and_die(char *program_path)
@@ -54,9 +56,15 @@ void choose_files_and_mode(int argc, char **argv, FILE *& fin, FILE *& fout,
 {
     fin = stdin;
     fout = stdout;
+    mode = USE_UNKNOWN;
+
+    char *prog_name = std::strrchr(argv[0], '/');
+    if (prog_name != NULL)
+        argv[0] = ++prog_name;
+
     if (streq(argv[0], kDecodeBinName))
         mode = USE_DECODE;
-    else
+    else if (streq(argv[0], kEncodeBinName))
         mode = USE_ENCODE;
 
     if (argc >= 2)
@@ -68,7 +76,7 @@ void choose_files_and_mode(int argc, char **argv, FILE *& fin, FILE *& fout,
             mode = USE_ENCODE;
         else if (streq(argv[1], "-d"))
             mode = USE_DECODE;
-        else if (streq(argv[1], "-h") || streq(argv[1], "--help"))
+        else if (mode == USE_UNKNOWN || streq(argv[1], "-h") || streq(argv[1], "--help"))
             help_and_die(argv[0]);
         else
             triggered = false;
@@ -95,7 +103,12 @@ void choose_files_and_mode(int argc, char **argv, FILE *& fin, FILE *& fout,
         // mode is encode, and no input file specified
         die(true, kInputFileErrorMsg);
     }
-    else {} // mode is decode and no args specified, treat like a stream cipher
+    else if (mode == USE_UNKNOWN)
+    {
+        die(true, "Cannot determine desired mode. Force mode with switch -e or -d");
+    }
+
+    // else, mode is decode and no args specified, treat like a stream cipher
 }
 
 int main(int argc, char **argv)
