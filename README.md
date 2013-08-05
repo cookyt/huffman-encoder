@@ -1,4 +1,8 @@
-#Goals
+Huffman Encoding/Decoding tool
+==============================
+
+Goals
+-----
 The goal of this assignment was to implement two tools to compress and
 decompress a given file using the huffman encoding algorithm. These
 tools were implemented using the C++ language. There will be a short
@@ -7,7 +11,8 @@ analysis as to their implementation details. Finally, there will be a
 section on how well these tools do against different types of files,
 and a discussion on possible ways to improve on them.
 
-#Build Instructions
+Build Instructions
+------------------
 The tools are built using the g++ compiler and GNU Make on a Linux machine. It
 is probably possible to build them on a Windows machine using Cygwin or MinGW,
 but this has not been tested. There are no dependancies other than the standard
@@ -16,7 +21,8 @@ libraries.
 To build the tools, simply call `make` in the root directory. This will produce
 the binary `huf`.
 
-#Interface
+Interface
+---------
 Each of the tools takes a mandatory input file and an optional output
 file as arguments. If no output file is specified, the output is
 printed to standard output. To call, simply type one of
