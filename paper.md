@@ -89,11 +89,13 @@ frequencies with which those characters appear in the file.
 
 Below is some pseudo code to build a frequency table.
 
+```python
     def freq_table(file):
         frequencies = new empty_array[256]
         for character in file:
             frequencies[character] += 1
         return frequencies
+```
 
 The code creates a map of 256 values, all initially 0. 256 is picked
 because it is the number of distinct values possible in a single byte.
@@ -109,6 +111,7 @@ that is constant.
 After the table is constructed, the tree must be built. Here is the
 pseudo code to build the tree.
 
+```python
     def huf_tree(freq_table):
         min_freq_priority_queue Q
         for (char, value) in freq_table:
@@ -121,6 +124,7 @@ pseudo code to build the tree.
             root.left = lnode
             root.right = rnode
         return Q.pop()
+```
 
 The code first creates a new binary tree node for each unique
 character in the file, and inserts the nodes into a priority queue
@@ -151,6 +155,7 @@ bit string for that character. To speed up compression, we first build
 an index which maps characters to their pre-computed bit strings. Here
 is the code.
 
+```python
     def gen_index(tree):
         index = new empty_array[256]
         gen_index_helper(tree.root, "", index)
@@ -162,6 +167,7 @@ is the code.
         else
             gen_index_helper(node.left, bit_string+"0")
             gen_index_helper(node.left, bit_string+"1")
+```
 
 The code essentially performs a recursive DFS on the tree, starting at
 the root. Every time a leaf node is reached, the value of the index is
@@ -176,11 +182,13 @@ Here is where the actual encoding takes place. At this point, the tree
 has been built and indexed, so all that is needed now is to go through
 the file character by character and encode. Here's some pseudo code:
 
+```python
     def encode(index, file_in, file_out):
         bit_string encoded_data
         for char in file_in:
             encoded_data.append(index[char])
         file_out.write(encoded_data)
+```
 
 This code is simple; it keeps a bit string representing the encoded
 file, and appends to it character by character. The loop runs in time
@@ -248,6 +256,7 @@ always have two children), and a bit of 1 represents a leaf. The next
 
 Here is some code which takes a huffman tree and writes it to file:
 
+```python
     def to_file(tree):
         bitstring tree_str
         stack S
@@ -263,6 +272,7 @@ Here is some code which takes a huffman tree and writes it to file:
                 S.push(node.right)
                 S.push(node.left)
         return tree_str
+```
 
 This code is simply a stack implementation of a preorder DFS on the
 huffman tree. Each iteration of the loop appends the correct value for
@@ -319,6 +329,7 @@ sub-optimal, but might be good enough for most purposes.
 #####2.1.2.1.2 Reading the Tree
 Now that it has been established how the tree is formatted, we can see how the tree can be read. Pseudo code:
 
+```python
     def read_tree_str_helper(cur_node, bitstr, pos):
         bit = bitstr.get_bit(pos)
         pos += 1
@@ -333,6 +344,7 @@ Now that it has been established how the tree is formatted, we can see how the t
     def read_tree_str(bitstr):
         tree = new huf_tree()
         read_tree_str_helper(tree.root, bitstr, 0)
+```
 
 Essentially, the code performs a postorder DFS on the bitstring
 representation of the tree, and reads it into an internal data
@@ -345,6 +357,7 @@ the original file. In the end, this code runs in time on the order of
 ####2.1.2.1.3 The Tree-Walking Method
 Now that the tree has been read, it is possible to decode the file. Thepseudo code is as follows:
 
+```python
     def decode(tree, file):
         string output;
         cur = tree.root
@@ -358,6 +371,7 @@ Now that the tree has been read, it is possible to decode the file. Thepseudo co
                 output.append(cur.char)
                 cur = tree.root
         return output
+```
 
 The code starts with a refrence to the root and takes either the left
 or right child depending on whether the next bit is 0 or 1. Once it
@@ -395,21 +409,23 @@ around this, all my file-writing and string-constructing methods for
 bitvector prepended the number of unused bits to the string.
 
 #3. Results
-File Name     Original  Compressed  Ratio
-hamlet:       182581    111802      61.234%
-juliuscaesar: 118048    71910       60.916%
-macbeth:      105405    64345       61.045%
-othello:      156449    95358       60.951%
+| File Name    | Original | Compressed | Ratio   |
+| ------------ | -------- | ---------- | ------- |
+| hamlet       | 182581   | 111802     | 61.234% |
+| juliuscaesar | 118048   | 71910      | 60.916% |
+| macbeth      | 105405   | 64345      | 61.045% |
+| othello      | 156449   | 95358      | 60.951% |
 
 These results show reasonable performance of this implementation. I
 also tested the program on multiple files of varying types. Here are
 some average values for compression ratios:
 
-File Type                               Approximate Ratio
-ZIP files                               98%
-Text files from various short stories   65%
-Random data from /dev/urandom           110%
-RTF file with large embeded images      40%
+| File Type                              | Approximate Ratio |
+| -------------------------------------- | ----------------- |
+| ZIP files                              | 98%               |
+| Text files from various short stories  | 65%               |
+| Random data from /dev/urandom          | 110%              |
+| RTF file with large embeded images     | 40%               |
 
 Most interesting are the last two. The random data became larger after
 compression while the RTF file got a surprisingly low compression
